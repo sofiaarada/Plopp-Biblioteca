@@ -1,0 +1,171 @@
+/* ===== Paleta oficial Plopp Library (tomada de plopp-library-brand.html) ===== */
+:root {
+  --lime: #B8E628;
+  --lime-dark: #9CC41E;
+  --lime-light: #D4F06E;
+  --lavender: #C4B5E0;
+  --lavender-light: #DDD3EF;
+  --lavender-dark: #A994D0;
+  --navy: #1B2A4A;
+  --navy-light: #2C3E6B;
+  --navy-dark: #0F1B33;
+  --cream: #FFF8EC;
+  --cream-dark: #F5EDD8;
+  --plopp-white: #FFFFFF;
+  --plopp-gray: #9CA3AF;
+  --plopp-gray-light: #E5E7EB;
+  --plopp-red: #EF4444;
+}
+
+:root[data-theme="dark"] {
+  --primary: var(--lime);
+  --primary-hover: var(--lime-dark);
+  --primary-soft: rgba(184, 230, 40, 0.16);
+
+  --bg: var(--navy-dark);
+  --surface: var(--navy);
+  --surface-hover: var(--navy-light);
+  --border: #2C3E6B;
+  --border-strong: #3B4F82;
+
+  --text: var(--cream);
+  --text-secondary: #C7CEE0;
+  --text-muted: #8A93B3;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+:root[data-theme="light"] {
+  --primary: var(--lime-dark);
+  --primary-hover: #86A317;
+  --primary-soft: rgba(184, 230, 40, 0.18);
+
+  --bg: var(--cream);
+  --surface: var(--plopp-white);
+  --surface-hover: var(--cream-dark);
+  --border: #ECE1C6;
+  --border-strong: #DDD0AC;
+
+  --text: var(--navy);
+  --text-secondary: #4A5578;
+  --text-muted: #7B84A3;
+
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+}
+
+:root {
+
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 22px;
+
+  --shadow: 0 4px 24px rgba(27, 42, 74, 0.10);
+  --shadow-md: 0 8px 40px rgba(27, 42, 74, 0.15);
+
+  --sidebar-w: 250px;
+  --topbar-h: 56px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: var(--bg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
