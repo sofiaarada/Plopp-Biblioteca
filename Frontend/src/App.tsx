@@ -22,7 +22,7 @@ import './styles/plopp-theme.css';
 const rolePermissions: Record<CurrentUser['rol'], string[]> = {
   admin: ['dashboard', 'books', 'users', 'loans', 'accounts'],
   bibliotecario: ['dashboard', 'books', 'users', 'loans'],
-  usuario: ['home', 'books', 'community', 'profile'],
+  usuario: ['home', 'books', 'loans', 'community', 'profile'],
 };
 
 function App() {
@@ -117,7 +117,7 @@ function App() {
       case 'users':
         return userRole === 'usuario' ? <BooksView userRole={userRole} currentUser={currentUser} /> : <UsersView />;
       case 'loans':
-        return userRole === 'usuario' ? <BooksView userRole={userRole} currentUser={currentUser} /> : <LoansView />;
+        return <LoansView currentUser={currentUser} />;
       case 'accounts':
         return userRole === 'admin' ? <AccountsView userRole={userRole} /> : <BooksView userRole={userRole} currentUser={currentUser} />;
       case 'community':

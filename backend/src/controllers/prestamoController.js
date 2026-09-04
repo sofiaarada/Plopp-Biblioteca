@@ -15,7 +15,12 @@ export const getPrestamos = async (req, res) => {
                 u.cedula AS cedulaUsuario,
                 u.correo AS correoUsuario,
                 dp.id_libro,
-                l.titulo AS librosPrestados
+                l.titulo AS librosPrestados,
+                l.autor,
+                l.categoria,
+                l.año,
+                l.portada,
+                l.descripcion
             FROM prestamos p
             JOIN usuarios u ON p.id_usuario = u.id_usuario
             JOIN detalle_prestamo dp ON p.id_prestamo = dp.id_prestamo

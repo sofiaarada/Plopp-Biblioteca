@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
-import { PlusCircle, X, Edit, Trash2, Search } from 'lucide-react';
-import type { Libro, Usuario, Prestamo } from '../types';
+import { PlusCircle, X, Edit, Trash2, Search, BookOpen } from 'lucide-react';
+import type { CurrentUser, Libro, Usuario, Prestamo } from '../types';
 import { api } from '../api';
 
-export const LoansView: React.FC = () => {
-  const isReadOnly = false;
+interface LoansViewProps {
+  currentUser?: CurrentUser | null;
+}
+
+export const LoansView: React.FC<LoansViewProps> = ({ currentUser = null }) => {
+  const isReadOnly = currentUser?.rol === 'usuario';
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
     
@@ -13,6 +17,7 @@ export const LoansView: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [libros, setLibros] = useState<Libro[]>([]);
   const [busqueda, setBusqueda] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState<'todos' | 'prestados' | 'devueltos'>('prestados');
   const [busquedaUsuarioModal, setBusquedaUsuarioModal] = useState('');
 
   // Estados para el formulario
@@ -130,26 +135,41 @@ export const LoansView: React.FC = () => {
     }
   };
 
+  const prestamosDelUsuario = currentUser?.rol === 'usuario'
+    ? prestamos.filter(prestamo => prestamo.id_usuario === currentUser.id_usuario)
+    : prestamos;
+
+  const prestamosPorEstado = isReadOnly && filtroEstado !== 'todos'
+    ? prestamosDelUsuario.filter(prestamo => filtroEstado === 'devueltos'
+      ? prestamo.estado === 'Devuelto'
+      : prestamo.estado !== 'Devuelto')
+    : prestamosDelUsuario;
+
   const prestamosFiltrados = busqueda.trim()
-    ? prestamos.filter(p => {
+    ? prestamosPorEstado.filter(p => {
         const texto = busqueda.trim().toLowerCase();
         return (
+          (p.librosPrestados && p.librosPrestados.toLowerCase().includes(texto)) ||
           (p.nombreUsuario && p.nombreUsuario.toLowerCase().includes(texto)) ||
           (p.cedulaUsuario && p.cedulaUsuario.includes(texto))
         );
       })
-    : prestamos;
+    : prestamosPorEstado;
+
+  const formatearFecha = (fecha: string | null) => fecha
+    ? new Date(fecha).toLocaleDateString('es-CO')
+    : 'Pendiente';
 
   return (
     <div className="view-container">
       <div className="page-header">
-        <h2>Control de Préstamos</h2>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <h2>{isReadOnly ? 'Mis préstamos' : 'Control de Préstamos'}</h2>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <div style={{ position: 'relative' }}>
             <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }} />
             <input
               type="text"
-              placeholder="Buscar por nombre o cédula..."
+              placeholder={isReadOnly ? 'Buscar entre mis libros...' : 'Buscar por nombre o cédula...'}
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               className="form-control"
@@ -165,31 +185,82 @@ export const LoansView: React.FC = () => {
         </div>
       </div>
 
+      {isReadOnly && (
+        <div className="loan-status-tabs" role="tablist" aria-label="Filtrar mis préstamos">
+          {[
+            ['prestados', 'Prestados'],
+            ['devueltos', 'Devueltos'],
+            ['todos', 'Todos'],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={filtroEstado === value}
+              className={filtroEstado === value ? 'active' : ''}
+              onClick={() => setFiltroEstado(value as 'todos' | 'prestados' | 'devueltos')}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {isReadOnly ? (
+        <div className="loan-book-grid">
+          {prestamosFiltrados.map((prestamo) => (
+            <article className="loan-book-card" key={prestamo.id_prestamo}>
+              {prestamo.portada ? (
+                <img className="loan-book-cover" src={prestamo.portada} alt={`Portada de ${prestamo.librosPrestados}`} />
+              ) : (
+                <div className="loan-book-cover loan-book-cover-empty"><BookOpen size={30} /><span>Sin portada</span></div>
+              )}
+              <div className="loan-book-content">
+                <h3>{prestamo.librosPrestados}</h3>
+                <p className="book-author">{prestamo.autor || 'Autor no registrado'}</p>
+                <div className="loan-book-meta">
+                  <span>{prestamo.categoria || 'Sin categoría'}</span>
+                  {prestamo.año && <span>{prestamo.año}</span>}
+                </div>
+                {prestamo.descripcion && <p className="loan-book-description">{prestamo.descripcion}</p>}
+                <div className="loan-book-dates">
+                  <div><small>Lo prestaste</small><strong>{formatearFecha(prestamo.fecha_prestamo)}</strong></div>
+                  <div><small>Debes devolverlo</small><strong>{formatearFecha(prestamo.fecha_devolucion)}</strong></div>
+                </div>
+                <span className={`badge ${prestamo.estado === 'Devuelto' ? 'success' : prestamo.estado === 'Activo' ? 'warning' : 'danger'}`}>
+                  {prestamo.estado === 'Devuelto' ? 'Devuelto' : prestamo.estado === 'Vencido' ? 'Vencido' : 'Prestado'}
+                </span>
+              </div>
+            </article>
+          ))}
+          {prestamosFiltrados.length === 0 && <p className="loan-empty">No hay libros en este historial.</p>}
+        </div>
+      ) : (
       <div className="data-container">
         <div className="table-wrapper">
           <table>
             <thead>
               <tr>
                 <th>ID Préstamo</th>
-                <th>Usuario</th>
+                {!isReadOnly && <th>Usuario</th>}
                 <th>Libros</th>
                 <th>Fecha Préstamo</th>
                 <th>Devolución</th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                {!isReadOnly && <th>Acciones</th>}
               </tr>
             </thead>
             <tbody>
               {prestamosFiltrados.map((prestamo) => {
-                const formatearFecha = (fecha: string | null) => fecha ? new Date(fecha).toLocaleDateString() : 'Pendiente';
-                
                 return (
                   <tr key={prestamo.id_prestamo}>
                     <td><strong>#{prestamo.id_prestamo}</strong></td>
-                    <td>
-                      <div>{prestamo.nombreUsuario}</div>
-                      <small style={{ opacity: 0.6, fontSize: '0.8em' }}>C.C. {prestamo.cedulaUsuario || '—'} · {prestamo.correoUsuario}</small>
-                    </td>
+                    {!isReadOnly && (
+                      <td>
+                        <div>{prestamo.nombreUsuario}</div>
+                        <small style={{ opacity: 0.6, fontSize: '0.8em' }}>C.C. {prestamo.cedulaUsuario || '—'} · {prestamo.correoUsuario}</small>
+                      </td>
+                    )}
                     <td>{prestamo.librosPrestados}</td>
                     <td>{formatearFecha(prestamo.fecha_prestamo)}</td>
                     <td>{formatearFecha(prestamo.fecha_devolucion)}</td>
@@ -201,8 +272,8 @@ export const LoansView: React.FC = () => {
                         {prestamo.estado}
                       </span>
                     </td>
-                    <td>
-                      {!isReadOnly && (
+                    {!isReadOnly && (
+                      <td>
                         <div className="action-buttons">
                           <button className="btn-icon text-blue" onClick={() => handleEdit(prestamo)} title="Editar">
                             <Edit size={18} />
@@ -211,8 +282,8 @@ export const LoansView: React.FC = () => {
                             <Trash2 size={18} />
                           </button>
                         </div>
-                      )}
-                    </td>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
@@ -220,6 +291,7 @@ export const LoansView: React.FC = () => {
           </table>
         </div>
       </div>
+      )}
 
       {isModalOpen && (
         <div className="modal-overlay">

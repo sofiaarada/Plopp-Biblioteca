@@ -28,6 +28,11 @@ export interface Prestamo {
   cedulaUsuario?: string;
   correoUsuario?: string;
   librosPrestados?: string;
+  autor?: string;
+  categoria?: string;
+  año?: number;
+  portada?: string | null;
+  descripcion?: string | null;
 }
 
 export interface DetallePrestamo {

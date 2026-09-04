@@ -39,7 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const visibleNavItems = navItems.filter((item) => {
     if (userRole === 'admin') return ['dashboard', 'books', 'users', 'loans', 'accounts'].includes(item.id);
     if (userRole === 'bibliotecario') return ['dashboard', 'books', 'users', 'loans'].includes(item.id);
-    return ['home', 'books', 'community', 'profile'].includes(item.id);
+    return ['home', 'books', 'loans', 'community', 'profile'].includes(item.id);
   });
 
   return (
