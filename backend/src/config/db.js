@@ -26,14 +26,16 @@ if (process.env.DB_SSL === 'true') {
     } else if (process.env.DB_CA_CERT) {
         ca = process.env.DB_CA_CERT.replace(/\\n/g, '\n');
     }
-    // "servername" conserva el host real para validar el certificado aunque
-    // se conecte por IP (DB_HOST = IP directa). En la nube DB_HOST ya es el
-    // hostname, así que DB_SERVERNAME no hace falta.
-    config.ssl = {
-        ca,
-        rejectUnauthorized: true,
-        servername: process.env.DB_SERVERNAME || dbHost
-    };
+    if (ca) {
+        config.ssl = {
+            ca,
+            rejectUnauthorized: true,
+            servername: process.env.DB_SERVERNAME || dbHost
+        };
+    } else {
+        // Sin certificado CA: se usa TLS cifrado pero sin verificar el host.
+        config.ssl = { rejectUnauthorized: false };
+    }
 }
 
 const pool = mysql.createPool(config);
