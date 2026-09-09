@@ -1,6 +1,4 @@
--- Migración: módulo de Comunidad para Plopp Library
--- Ejecuta este archivo una vez sobre tu base de datos bibliotecaFerry_db
--- (por ejemplo: mysql -u root -p -P 3300 bibliotecaFerry_db < migracion_comunidad.sql)
+
 
 USE bibliotecaFerry_db;
 

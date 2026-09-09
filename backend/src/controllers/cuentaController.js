@@ -81,7 +81,7 @@ export const createCuenta = async (req, res) => {
     }
 };
 
-// Actualizar cuenta (no se actualiza password aquí)
+// Actualizar cuenta
 export const updateCuenta = async (req, res) => {
     try {
         const { id } = req.params;
@@ -108,11 +108,7 @@ export const updateCuenta = async (req, res) => {
     }
 };
 
-// Login — verificar credenciales y devolver rol, token e id de lector vinculado
-// Login/registro con Facebook o Google.
-// El frontend ya validó el token del proveedor (Google Identity / Facebook SDK)
-// y nos manda el nombre y correo verificados. Si el correo no existe, se crea
-// automáticamente un perfil de lector nuevo.
+// Login con Google
 export const loginSocial = async (req, res) => {
     try {
         const { correo, nombre, proveedor } = req.body;
@@ -125,7 +121,8 @@ export const loginSocial = async (req, res) => {
         let lector = existentes[0];
 
         if (!lector) {
-            const cedulaTemporal = `${proveedor || 'social'}-${Date.now()}`;
+            // cedula única y corta (máx 20 chars que permite la BD)
+            const cedulaTemporal = `${proveedor || 'social'}-${String(Date.now()).slice(-8)}`;
             const passwordAleatorio = await bcrypt.hash(`${correo}-${Date.now()}`, 10);
 
             const [creado] = await db.query(
@@ -138,6 +135,7 @@ export const loginSocial = async (req, res) => {
 
         const token = signToken({
             id_cuenta: null,
+            id_usuario: lector.id_usuario,
             nombre_usuario: lector.nombre,
             correo: lector.correo,
             rol: 'usuario',
@@ -175,7 +173,6 @@ export const loginCuenta = async (req, res) => {
 
         let cuenta = resultado[0];
 
-        // Si no es una cuenta del sistema, buscar el perfil de lector en la tabla usuarios
         if (!cuenta) {
             const [lectores] = await db.query(
                 'SELECT id_usuario, nombre, correo, contraseña FROM usuarios WHERE correo = ?',
@@ -194,6 +191,7 @@ export const loginCuenta = async (req, res) => {
 
             const token = signToken({
                 id_cuenta: null,
+                id_usuario: lector.id_usuario,
                 nombre_usuario: lector.nombre,
                 correo: lector.correo,
                 rol: 'usuario'
@@ -240,6 +238,7 @@ export const loginCuenta = async (req, res) => {
 
         const token = signToken({
             id_cuenta: cuenta.id_cuenta,
+            id_usuario: idUsuario,
             nombre_usuario: cuenta.nombre_usuario,
             correo: cuenta.correo,
             rol: cuenta.rol

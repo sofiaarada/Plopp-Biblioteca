@@ -1,6 +1,6 @@
 import db from '../config/db.js';
 
-// Obtener el perfil (foto + bio) de un usuario, junto a sus datos básicos
+// Obtener el perfil (foto + bio) de un usuario
 export const getPerfil = async (req, res) => {
     try {
         const idUsuario = req.params.id;

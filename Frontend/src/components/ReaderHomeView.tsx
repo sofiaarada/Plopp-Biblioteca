@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, BookOpen, CalendarDays, Star } from 'lucide-react';
 import type { CurrentUser, Libro, Prestamo, Resena } from '../types';
-import { api } from '../api';
+import { api, resolveImageUrl } from '../api';
 
 interface ReaderHomeViewProps {
   currentUser: CurrentUser | null;
@@ -91,7 +91,7 @@ export const ReaderHomeView: React.FC<ReaderHomeViewProps> = ({ currentUser, onN
         <div className="reader-book-grid">
           {recommendations.map((review) => (
             <article className="reader-mini-book" key={review.id_libro}>
-              {review.portada ? <img src={review.portada} alt={`Portada de ${review.titulo}`} /> : <div className="reader-mini-cover"><BookOpen size={26} /></div>}
+              {review.portada ? <img src={resolveImageUrl(review.portada)} alt={`Portada de ${review.titulo}`} /> : <div className="reader-mini-cover"><BookOpen size={26} /></div>}
               <div><strong>{review.titulo || 'Libro recomendado'}</strong><span>{review.autor || 'Plopp Library'}</span><Stars value={review.calificacion} /></div>
             </article>
           ))}
@@ -104,7 +104,7 @@ export const ReaderHomeView: React.FC<ReaderHomeViewProps> = ({ currentUser, onN
         <div className="reader-new-grid">
           {latestBooks.map((book) => (
             <button type="button" className="reader-new-book" key={book.id_libro} onClick={() => onNavigate('books')}>
-              {book.portada ? <img src={book.portada} alt={`Portada de ${book.titulo}`} /> : <span className="reader-new-cover"><BookOpen size={24} /></span>}
+              {book.portada ? <img src={resolveImageUrl(book.portada)} alt={`Portada de ${book.titulo}`} /> : <span className="reader-new-cover"><BookOpen size={24} /></span>}
               <span><strong>{book.titulo}</strong><small>{book.autor} · {book.año}</small></span>
             </button>
           ))}

@@ -43,7 +43,7 @@ function responder(pregunta: string, role: CurrentUser['rol']): string {
   const texto = pregunta.toLowerCase();
   const entry = faqByRole[role].find((f) => f.keywords.some((k) => texto.includes(k)));
   if (entry) return entry.answer;
-  return 'Todavía estoy aprendiendo esa 🙂. Prueba con una de las preguntas sugeridas o explora el menú lateral — cada sección tiene lo que necesitas.';
+  return 'Todavía estoy aprendiendo esa pregunta. Prueba con una de las consultas sugeridas o explora el menú lateral — cada sección tiene lo que necesitas.';
 }
 
 interface AIAssistantProps {
@@ -54,7 +54,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ role }) => {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { from: 'bot', text: '¡Hola! Soy el asistente de Plopp Library. Pregúntame cómo usar la app 📚' },
+    { from: 'bot', text: '¡Hola! Soy el asistente de Plopp Library. Pregúntame cualquier duda sobre el uso de la biblioteca.' },
   ]);
 
   const enviar = (texto: string) => {

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Plus, BookText, X, Edit, Trash2, Star, Send } from 'lucide-react';
 import type { Libro, CurrentUser, Resena } from '../types';
-import { api } from '../api';
+import { api, resolveImageUrl } from '../api';
 import { useToast } from './Toast';
 
 interface BooksViewProps {
@@ -371,7 +372,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
             <div>
               {libro.portada ? (
                 <div className="book-cover-frame">
-                  <img className="book-cover" src={libro.portada} alt={`Portada de ${libro.titulo}`} />
+                  <img className="book-cover" src={resolveImageUrl(libro.portada)} alt={`Portada de ${libro.titulo}`} />
                 </div>
               ) : (
                 <div className="book-cover-frame book-cover-empty">
@@ -402,7 +403,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
         ))}
       </div>
 
-      {detailBook && (
+      {detailBook && createPortal(
         <div className="modal-overlay" onClick={() => setDetailBook(null)}>
           <div className="modal-content book-detail-modal" onClick={(event) => event.stopPropagation()}>
             <div className="modal-header">
@@ -410,7 +411,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
               <button className="modal-close" onClick={() => setDetailBook(null)} aria-label="Cerrar detalle"><X size={24} /></button>
             </div>
             <div className="book-detail-hero">
-              {detailBook.portada ? <img src={detailBook.portada} alt={`Portada de ${detailBook.titulo}`} /> : <div className="book-detail-cover-empty"><BookText size={48} /><span>Sin portada</span></div>}
+              {detailBook.portada ? <img src={resolveImageUrl(detailBook.portada)} alt={`Portada de ${detailBook.titulo}`} /> : <div className="book-detail-cover-empty"><BookText size={48} /><span>Sin portada</span></div>}
               <div className="book-detail-summary">
                 <span className="badge success">{detailBook.estado}</span>
                 <p className="book-author">{detailBook.autor} · {detailBook.año}</p>
@@ -448,10 +449,11 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {selectedBook && actionMode && (
+      {selectedBook && actionMode && createPortal(
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
@@ -474,10 +476,11 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {isModalOpen && (
+      {isModalOpen && createPortal(
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
@@ -564,7 +567,8 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

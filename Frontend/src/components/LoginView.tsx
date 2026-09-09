@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import type { CurrentUser } from '../types';
-import { api, setToken } from '../api';
-import { SocialAuthButtons } from './SocialAuthButtons';
+import { api, setToken, API_URL } from '../api';
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
+import axios from 'axios';
+
 
 interface LoginViewProps {
   onLogin: (user: CurrentUser) => void;
@@ -16,6 +18,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // --- FUNCIÓN ORIGINAL PARA LOGIN NORMAL ---
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
@@ -46,6 +49,30 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
       setError('No se pudo conectar con el servidor');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    try {
+      setError('');
+      // Enviamos el id_token de Google al backend
+      const res = await axios.post(`${API_URL.replace('/api', '')}/api/auth/google`, {
+        token: credentialResponse.credential,
+      });
+
+      // El backend responde con { token, usuario }
+      setToken(res.data.token ?? null);
+
+      const user: CurrentUser = {
+        ...(res.data.usuario as CurrentUser),
+        token: res.data.token ?? null,
+      };
+
+      onLogin(user);
+
+    } catch (error) {
+      console.error('Error al iniciar sesión con Google:', error);
+      setError('Hubo un problema al conectar con Google');
     }
   };
 
@@ -119,7 +146,18 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
           </form>
 
           <div className="plopp-divider"><span>o continúa con</span></div>
-          <SocialAuthButtons onAuthenticated={onLogin} />
+          
+          {/* AQUÍ ESTÁ EL BOTÓN DE GOOGLE */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', width: '100%' }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Error al abrir la ventana de Google')}
+              theme="outline"
+              shape="pill"
+            />
+          </div>
+          
+
         </div>
       </div>
     </div>

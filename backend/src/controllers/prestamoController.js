@@ -100,7 +100,6 @@ export const updatePrestamo = async (req, res) => {
         const consultaPrestamo = 'UPDATE prestamos SET id_usuario = ?, fecha_prestamo = ?, fecha_devolucion = ?, estado = ? WHERE id_prestamo = ?';
         await db.query(consultaPrestamo, [id_usuario, fecha_prestamo, fecha_devolucion || null, estado, idPrestamo]);
 
-        // Actualizamos también el libro en detalle_prestamo (asumiendo 1 libro por préstamo para hacerlo simple)
         if (id_libro) {
             const consultaDetalle = 'UPDATE detalle_prestamo SET id_libro = ? WHERE id_prestamo = ?';
             await db.query(consultaDetalle, [id_libro, idPrestamo]);
@@ -119,10 +118,8 @@ export const deletePrestamo = async (req, res) => {
     try {
         const idPrestamo = req.params.id;
 
-        // Primero borramos el detalle por las restricciones de llave foránea
         await db.query('DELETE FROM detalle_prestamo WHERE id_prestamo = ?', [idPrestamo]);
 
-        // Luego borramos el préstamo
         const [resultado] = await db.query('DELETE FROM prestamos WHERE id_prestamo = ?', [idPrestamo]);
 
         if (resultado.affectedRows === 0) {

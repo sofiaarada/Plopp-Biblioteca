@@ -36,16 +36,20 @@ export const crearRespuesta = async (req, res) => {
 
 export const getPublicaciones = async (req, res) => {
     try {
+        const idUsuario = req.query.id_usuario ? Number(req.query.id_usuario) : 0;
         const [resultado] = await db.query(
             `SELECT pub.id_publicacion, pub.contenido, pub.fecha,
                     u.id_usuario, u.nombre AS nombre_usuario, p.foto_url,
-                    l.id_libro, l.titulo, l.autor, l.portada
+                    l.id_libro, l.titulo, l.autor, l.portada,
+                    (SELECT COUNT(*) FROM likes_publicaciones lk WHERE lk.id_publicacion = pub.id_publicacion) AS total_likes,
+                    (SELECT COUNT(*) FROM likes_publicaciones lk WHERE lk.id_publicacion = pub.id_publicacion AND lk.id_usuario = ?) AS yo_di_like
              FROM publicaciones pub
              JOIN usuarios u ON u.id_usuario = pub.id_usuario
              LEFT JOIN perfiles p ON p.id_usuario = u.id_usuario
              LEFT JOIN libros l ON l.id_libro = pub.id_libro
              ORDER BY pub.fecha DESC
-             LIMIT 50`
+             LIMIT 50`,
+            [idUsuario]
         );
         res.json(resultado);
     } catch (error) {

@@ -1,4 +1,4 @@
-export const API_URL = 'http://localhost:3000/api';
+export const API_URL = 'http://localhost:4000/api';
 
 const TOKEN_KEY = 'bf_token';
 
@@ -49,4 +49,19 @@ export async function api(path: string, options: RequestInit = {}): Promise<Resp
     headers.set('Authorization', `Bearer ${token}`);
   }
   return fetch(`${API_URL}${path}`, { ...options, headers });
+}
+
+export function resolveImageUrl(path: string | null | undefined): string {
+  if (!path) return '';
+  const trimmed = path.trim();
+  if (
+    trimmed.startsWith('data:') ||
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('blob:')
+  ) {
+    return trimmed;
+  }
+  const base = API_URL.replace('/api', '');
+  return trimmed.startsWith('/') ? `${base}${trimmed}` : `${base}/uploads/${trimmed}`;
 }

@@ -1,6 +1,6 @@
 import db from '../config/db.js';
 
-// Reseñas de un libro específico, con nombre y foto de quien la escribió
+// Reseñas de un libro específico
 export const getResenasPorLibro = async (req, res) => {
     try {
         const idLibro = req.params.id;
@@ -29,7 +29,7 @@ export const getResenasPorLibro = async (req, res) => {
     }
 };
 
-// Todas las reseñas recientes, para el feed general de comunidad
+// Todas las reseñas recientes
 export const getResenasComunidad = async (req, res) => {
     try {
         const [resultado] = await db.query(
