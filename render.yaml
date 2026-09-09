@@ -1,0 +1,53 @@
+# Blueprint de Render: crea el backend (web service) y el frontend (static site).
+# Para usarlo: sube el repo y en Render elige "Blueprint" apuntando a este archivo.
+# Render te pedirá llenar las variables marcadas sin valor fijo.
+
+services:
+  # ── Backend: API + Socket.IO ─────────────────────────────
+  - type: web
+    name: plopp-backend
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: 4000
+      # Valores de tu instancia MySQL de Aiven (el host termina en .aivencloud.com)
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      # Aiven exige TLS
+      - key: DB_SSL
+        value: "true"
+      # Contenido del ca.pem de Aiven (opcional, pero recomendado)
+      - key: DB_CA_CERT
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+
+  # ── Frontend: React + Vite (estático) ────────────────────
+  - type: web
+    name: plopp-frontend
+    runtime: static
+    rootDir: Frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      # Debe apuntar al backend: se crea primero plopp-backend y luego
+      # se completa con su URL, p. ej. https://plopp-backend.onrender.com/api
+      - key: VITE_API_URL
+        sync: false
+      - key: VITE_GOOGLE_CLIENT_ID
+        sync: false
+      - key: VITE_FACEBOOK_APP_ID
+        sync: false
