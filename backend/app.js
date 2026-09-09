@@ -59,19 +59,9 @@ app.get('/', (req, res) => {
   res.send('<h1>Bienvenido a la API de la Biblioteca El Ferry</h1>');
 });
 
-app.use('/api', usuarioRoutes);
-app.use('/api', librosRoutes);
-app.use('/api', prestamosRoutes);
-app.use('/api', cuentasRoutes);
-app.use('/api', perfilRoutes);
-app.use('/api', resenasRoutes);
-app.use('/api', comunidadRoutes);
-app.use('/api', socialRoutes);
-app.use('/api', chatRoutes);
-app.use('/api', notificacionRoutes);
-app.use('/api', listaLecturaRoutes);
-
 // ── Google OAuth endpoint ───────────────────────────────────────────────────
+// OJO: debe ir ANTES de montar los routers, porque algunos routers (chat,
+// social, etc.) usan requireAuth global y bloquearían esta ruta pública.
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.post('/api/auth/google', async (req, res) => {
@@ -115,10 +105,22 @@ app.post('/api/auth/google', async (req, res) => {
     });
   } catch (error) {
     console.error('Error al verificar el token de Google:', error);
-    res.status(401).json({ error: 'Token de Google no válido o expirado', detalle: error.message });
+    res.status(401).json({ error: 'Token de Google no válido o expirado' });
   }
 });
 // ── Fin Google OAuth ────────────────────────────────────────────────────────
+
+app.use('/api', usuarioRoutes);
+app.use('/api', librosRoutes);
+app.use('/api', prestamosRoutes);
+app.use('/api', cuentasRoutes);
+app.use('/api', perfilRoutes);
+app.use('/api', resenasRoutes);
+app.use('/api', comunidadRoutes);
+app.use('/api', socialRoutes);
+app.use('/api', chatRoutes);
+app.use('/api', notificacionRoutes);
+app.use('/api', listaLecturaRoutes);
 
 const PORT = process.env.PORT || 4000;
 
