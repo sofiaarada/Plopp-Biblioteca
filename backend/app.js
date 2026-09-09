@@ -115,7 +115,7 @@ app.post('/api/auth/google', async (req, res) => {
     });
   } catch (error) {
     console.error('Error al verificar el token de Google:', error);
-    res.status(401).json({ error: 'Token de Google no válido o expirado' });
+    res.status(401).json({ error: 'Token de Google no válido o expirado', detalle: error.message });
   }
 });
 // ── Fin Google OAuth ────────────────────────────────────────────────────────
