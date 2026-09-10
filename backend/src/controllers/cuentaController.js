@@ -126,7 +126,7 @@ export const loginSocial = async (req, res) => {
             const passwordAleatorio = await bcrypt.hash(`${correo}-${Date.now()}`, 10);
 
             const [creado] = await db.query(
-                'INSERT INTO usuarios (nombre, cedula, correo, telefono, contraseña) VALUES (?, ?, ?, ?, ?)',
+                'INSERT INTO usuarios (nombre, cedula, correo, telefono, password) VALUES (?, ?, ?, ?, ?)',
                 [nombre, cedulaTemporal, correo, '', passwordAleatorio]
             );
 
@@ -175,7 +175,7 @@ export const loginCuenta = async (req, res) => {
 
         if (!cuenta) {
             const [lectores] = await db.query(
-                'SELECT id_usuario, nombre, correo, contraseña FROM usuarios WHERE correo = ?',
+                'SELECT id_usuario, nombre, correo, password FROM usuarios WHERE correo = ?',
                 [correo]
             );
 
@@ -184,7 +184,7 @@ export const loginCuenta = async (req, res) => {
             }
 
             const lector = lectores[0];
-            const passwordValido = await verificarPassword(password, lector.contraseña);
+            const passwordValido = await verificarPassword(password, lector.password);
             if (!passwordValido) {
                 return res.status(401).json({ mensaje: 'Credenciales incorrectas' });
             }
@@ -227,7 +227,7 @@ export const loginCuenta = async (req, res) => {
             if (lector.length === 0) {
                 const hash = await bcrypt.hash(password, 10);
                 const [nuevoLector] = await db.query(
-                    'INSERT INTO usuarios (nombre, correo, telefono, contraseña) VALUES (?, ?, ?, ?)',
+                    'INSERT INTO usuarios (nombre, correo, telefono, password) VALUES (?, ?, ?, ?)',
                     [cuenta.nombre_usuario, cuenta.correo, '', hash]
                 );
                 idUsuario = nuevoLector.insertId;

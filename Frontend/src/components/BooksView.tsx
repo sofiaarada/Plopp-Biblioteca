@@ -32,7 +32,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
   const [titulo, setTitulo] = useState('');
   const [autor, setAutor] = useState('');
   const [categoria, setCategoria] = useState('');
-  const [año, setAño] = useState('');
+  const [anio, setAnio] = useState('');
   const [portada, setPortada] = useState<string | null>(null);
   const [descripcion, setDescripcion] = useState('');
 
@@ -74,7 +74,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
     setTitulo('');
     setAutor('');
     setCategoria('');
-    setAño('');
+    setAnio('');
     setPortada(null);
     setDescripcion('');
     setIsModalOpen(true);
@@ -86,7 +86,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
     setTitulo(libro.titulo);
     setAutor(libro.autor);
     setCategoria(libro.categoria);
-    setAño(libro.año.toString());
+    setAnio(libro.anio.toString());
     setPortada(libro.portada ?? null);
     setDescripcion(libro.descripcion ?? '');
     setIsModalOpen(true);
@@ -144,7 +144,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
           titulo,
           autor,
           categoria,
-          año: parseInt(año),
+          anio: parseInt(anio),
           estado: 'Disponible',
           portada,
           descripcion: descripcion.trim() || null,
@@ -161,7 +161,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
         setTitulo('');
         setAutor('');
         setCategoria('');
-        setAño('');
+        setAnio('');
         setEditingId(null);
         setDescripcion('');
       } else {
@@ -259,7 +259,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
             titulo: selectedBook.titulo,
             autor: selectedBook.autor,
             categoria: selectedBook.categoria,
-            año: selectedBook.año,
+            anio: selectedBook.anio,
             estado: 'Prestado',
             portada: selectedBook.portada,
             descripcion: selectedBook.descripcion
@@ -305,7 +305,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
             titulo: selectedBook.titulo,
             autor: selectedBook.autor,
             categoria: selectedBook.categoria,
-            año: selectedBook.año,
+            anio: selectedBook.anio,
             estado: 'Disponible',
             portada: selectedBook.portada,
             descripcion: selectedBook.descripcion
@@ -392,7 +392,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
               </div>
               <div className="book-detail-item">
                 <span>Año:</span>
-                <span className="book-detail-value">{libro.año}</span>
+                <span className="book-detail-value">{libro.anio}</span>
               </div>
               <div className="book-detail-item">
                 <span>ID Libro:</span>
@@ -414,7 +414,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
               {detailBook.portada ? <img src={resolveImageUrl(detailBook.portada)} alt={`Portada de ${detailBook.titulo}`} /> : <div className="book-detail-cover-empty"><BookText size={48} /><span>Sin portada</span></div>}
               <div className="book-detail-summary">
                 <span className="badge success">{detailBook.estado}</span>
-                <p className="book-author">{detailBook.autor} · {detailBook.año}</p>
+                <p className="book-author">{detailBook.autor} · {detailBook.anio}</p>
                 <p className="book-detail-description">{detailBook.descripcion || 'Una historia para descubrir en Plopp Library. Explora las opiniones de otros lectores y encuentra tu próximo momento de lectura.'}</p>
                 <div className="book-rating-summary"><strong>{bookAverage.toFixed(1)}</strong><span><Star size={20} fill="currentColor" /> {reviewTotal} reseñas</span></div>
                 {userRole === 'usuario' && (
@@ -534,8 +534,8 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
                   type="number" 
                   className="form-control" 
                   placeholder="Ej. 1988" 
-                  value={año}
-                  onChange={(e) => setAño(e.target.value)}
+                  value={anio}
+                  onChange={(e) => setAnio(e.target.value)}
                   required 
                 />
               </div>

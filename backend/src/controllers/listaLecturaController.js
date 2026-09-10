@@ -5,7 +5,7 @@ export const getMiLista = async (req, res) => {
   const idUsuario = req.usuario.id_usuario;
   try {
     const [rows] = await db.query(
-      `SELECT ll.id, ll.estado, ll.fecha, l.id_libro, l.titulo, l.autor, l.portada, l.categoria, l.año
+      `SELECT ll.id, ll.estado, ll.fecha, l.id_libro, l.titulo, l.autor, l.portada, l.categoria, l.anio
        FROM listas_lectura ll
        JOIN libros l ON l.id_libro = ll.id_libro
        WHERE ll.id_usuario = ?

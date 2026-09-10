@@ -7,11 +7,11 @@ export const mockUsuarios: Usuario[] = [
 ];
 
 export const mockLibros: Libro[] = [
-  { id_libro: 101, titulo: 'Cien Años de Soledad', autor: 'Gabriel García Márquez', categoria: 'Novela', año: 1967, estado: 'Prestado' },
-  { id_libro: 102, titulo: 'Don Quijote de la Mancha', autor: 'Miguel de Cervantes', categoria: 'Clásico', año: 1605, estado: 'Disponible' },
-  { id_libro: 103, titulo: 'El Principito', autor: 'Antoine de Saint-Exupéry', categoria: 'Infantil', año: 1943, estado: 'Disponible' },
-  { id_libro: 104, titulo: 'Ficciones', autor: 'Jorge Luis Borges', categoria: 'Cuentos', año: 1944, estado: 'Mantenimiento' },
-  { id_libro: 105, titulo: 'La Sombra del Viento', autor: 'Carlos Ruiz Zafón', categoria: 'Misterio', año: 2001, estado: 'Prestado' },
+  { id_libro: 101, titulo: 'Cien Años de Soledad', autor: 'Gabriel García Márquez', categoria: 'Novela', anio: 1967, estado: 'Prestado' },
+  { id_libro: 102, titulo: 'Don Quijote de la Mancha', autor: 'Miguel de Cervantes', categoria: 'Clásico', anio: 1605, estado: 'Disponible' },
+  { id_libro: 103, titulo: 'El Principito', autor: 'Antoine de Saint-Exupéry', categoria: 'Infantil', anio: 1943, estado: 'Disponible' },
+  { id_libro: 104, titulo: 'Ficciones', autor: 'Jorge Luis Borges', categoria: 'Cuentos', anio: 1944, estado: 'Mantenimiento' },
+  { id_libro: 105, titulo: 'La Sombra del Viento', autor: 'Carlos Ruiz Zafón', categoria: 'Misterio', anio: 2001, estado: 'Prestado' },
 ];
 
 export const mockPrestamos: Prestamo[] = [

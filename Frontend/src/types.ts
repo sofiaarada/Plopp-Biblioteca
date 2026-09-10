@@ -11,7 +11,7 @@ export interface Libro {
   titulo: string;
   autor: string;
   categoria: string;
-  año: number;
+  anio: number;
   estado: 'Disponible' | 'Prestado' | 'Mantenimiento';
   portada?: string | null;
   descripcion?: string | null;
@@ -30,7 +30,7 @@ export interface Prestamo {
   librosPrestados?: string;
   autor?: string;
   categoria?: string;
-  año?: number;
+  anio?: number;
   portada?: string | null;
   descripcion?: string | null;
 }
@@ -182,7 +182,7 @@ export interface ListaLectura {
   autor: string;
   portada?: string | null;
   categoria?: string;
-  año?: number;
+  anio?: number;
   estado: 'quiero_leer' | 'leyendo' | 'leido';
   fecha: string;
 }

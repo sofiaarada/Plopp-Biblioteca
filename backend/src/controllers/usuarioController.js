@@ -65,11 +65,11 @@ export const createUsuario = async (req, res) => {
             return res.status(409).json({ mensaje: 'Ya existe un usuario registrado con esa cédula' });
         }
 
-        const contraseña = password ? await bcrypt.hash(password, 10) : '';
-        const consulta = 'INSERT INTO usuarios (nombre, cedula, correo, telefono, contraseña) VALUES (?, ?, ?, ?, ?)';
+        const hashed = password ? await bcrypt.hash(password, 10) : '';
+        const consulta = 'INSERT INTO usuarios (nombre, cedula, correo, telefono, password) VALUES (?, ?, ?, ?, ?)';
         
         
-        const [resultado] = await db.query(consulta, [nombre, cedula, correo, telefono, contraseña]);
+        const [resultado] = await db.query(consulta, [nombre, cedula, correo, telefono, hashed]);
 
         
         res.status(201).json({ 

@@ -81,7 +81,7 @@ app.post('/api/auth/google', async (req, res) => {
     if (!lector) {
       const cedulaTemporal = `google-${String(Date.now()).slice(-8)}`;
       const [result] = await db.query(
-        'INSERT INTO usuarios (nombre, cedula, correo, telefono, contraseña) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO usuarios (nombre, cedula, correo, telefono, password) VALUES (?, ?, ?, ?, ?)',
         [name, cedulaTemporal, email, '', '']
       );
       lector = { id_usuario: result.insertId, nombre: name, correo: email };

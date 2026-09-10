@@ -220,7 +220,7 @@ export const LoansView: React.FC<LoansViewProps> = ({ currentUser = null }) => {
                 <p className="book-author">{prestamo.autor || 'Autor no registrado'}</p>
                 <div className="loan-book-meta">
                   <span>{prestamo.categoria || 'Sin categoría'}</span>
-                  {prestamo.año && <span>{prestamo.año}</span>}
+                  {prestamo.anio && <span>{prestamo.anio}</span>}
                 </div>
                 {prestamo.descripcion && <p className="loan-book-description">{prestamo.descripcion}</p>}
                 <div className="loan-book-dates">

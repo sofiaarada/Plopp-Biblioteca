@@ -18,7 +18,7 @@ export const getPrestamos = async (req, res) => {
                 l.titulo AS librosPrestados,
                 l.autor,
                 l.categoria,
-                l.año,
+                l.anio,
                 l.portada,
                 l.descripcion
             FROM prestamos p

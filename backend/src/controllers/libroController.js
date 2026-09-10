@@ -55,16 +55,16 @@ export const createLibro = async (req, res) => {
         const titulo = req.body.titulo;
         const autor = req.body.autor;
         const categoria = req.body.categoria;
-        const año = req.body.año;
+        const anio = req.body.anio;
         const estado = req.body.estado;
         const portada = req.body.portada || null;
         const descripcion = req.body.descripcion || null;
 
         
-        const consulta = 'INSERT INTO libros (titulo, autor, categoria, año, estado, portada, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const consulta = 'INSERT INTO libros (titulo, autor, categoria, anio, estado, portada, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?)';
         
         
-        const [resultado] = await db.query(consulta, [titulo, autor, categoria, año, estado, portada, descripcion]);
+        const [resultado] = await db.query(consulta, [titulo, autor, categoria, anio, estado, portada, descripcion]);
 
         res.status(201).json({ 
             mensaje: 'Libro registrado exitosamente', 
@@ -86,15 +86,15 @@ export const updateLibro = async (req, res) => {
         const titulo = req.body.titulo;
         const autor = req.body.autor;
         const categoria = req.body.categoria;
-        const año = req.body.año;
+        const anio = req.body.anio;
         const estado = req.body.estado;
         const portada = req.body.portada || null;
         const descripcion = req.body.descripcion || null;
 
-        const consulta = 'UPDATE libros SET titulo = ?, autor = ?, categoria = ?, año = ?, estado = ?, portada = ?, descripcion = ? WHERE id_libro = ?';
+        const consulta = 'UPDATE libros SET titulo = ?, autor = ?, categoria = ?, anio = ?, estado = ?, portada = ?, descripcion = ? WHERE id_libro = ?';
         
         
-        const [resultado] = await db.query(consulta, [titulo, autor, categoria, año, estado, portada, descripcion, idLibro]);
+        const [resultado] = await db.query(consulta, [titulo, autor, categoria, anio, estado, portada, descripcion, idLibro]);
 
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ mensaje: 'No se encontró el libro a modificar' });

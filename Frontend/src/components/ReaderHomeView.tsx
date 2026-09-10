@@ -41,7 +41,7 @@ export const ReaderHomeView: React.FC<ReaderHomeViewProps> = ({ currentUser, onN
   );
   const currentBook = libros.find((libro) => libro.id_libro === activeLoan?.id_libro);
   const progress = currentBook ? 42 : 0;
-  const latestBooks = [...libros].sort((a, b) => b.año - a.año).slice(0, 4);
+  const latestBooks = [...libros].sort((a, b) => b.anio - a.anio).slice(0, 4);
   const recommendations = resenas
     .filter((resena, index, all) => all.findIndex((item) => item.id_libro === resena.id_libro) === index)
     .slice(0, 4);
@@ -105,7 +105,7 @@ export const ReaderHomeView: React.FC<ReaderHomeViewProps> = ({ currentUser, onN
           {latestBooks.map((book) => (
             <button type="button" className="reader-new-book" key={book.id_libro} onClick={() => onNavigate('books')}>
               {book.portada ? <img src={resolveImageUrl(book.portada)} alt={`Portada de ${book.titulo}`} /> : <span className="reader-new-cover"><BookOpen size={24} /></span>}
-              <span><strong>{book.titulo}</strong><small>{book.autor} · {book.año}</small></span>
+              <span><strong>{book.titulo}</strong><small>{book.autor} · {book.anio}</small></span>
             </button>
           ))}
         </div>
