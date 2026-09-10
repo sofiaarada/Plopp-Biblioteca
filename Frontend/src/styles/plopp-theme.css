@@ -312,6 +312,16 @@
 .loan-book-dates div { display: flex; justify-content: space-between; gap: 0.5rem; }
 .loan-book-dates small { color: var(--text-muted); font-size: 0.72rem; }
 .loan-book-dates strong { color: var(--navy); font-size: 0.75rem; text-align: right; }
+.loan-return-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+.btn-plopp-primary.loan-return-btn { padding: 0.45rem 1rem; font-size: 0.8rem; }
 .loan-empty { grid-column: 1 / -1; color: var(--text-muted); }
 :root[data-theme="dark"] .loan-status-tabs button.active,
 :root[data-theme="dark"] .loan-book-content h3,
