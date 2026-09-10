@@ -303,9 +303,8 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
   };
 
   // Responder a publicación o reseña
-  const handleResponder = async (tipoOrigen: 'publicacion' | 'resena', idOrigen: number) => {
-    const key = `${tipoOrigen}-${idOrigen}`;
-    const comentario = textoRespuesta[key]?.trim();
+  const handleResponder = async (tipoOrigen: 'publicacion' | 'resena', idOrigen: number, clave: string) => {
+    const comentario = textoRespuesta[clave]?.trim();
     if (!comentario) return;
 
     if (!currentUser?.id_usuario) {
@@ -313,7 +312,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
       return;
     }
 
-    setEnviandoRespuesta((prev) => ({ ...prev, [key]: true }));
+    setEnviandoRespuesta((prev) => ({ ...prev, [clave]: true }));
     try {
       const res = await api('/nuevaRespuesta', {
         method: 'POST',
@@ -326,7 +325,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
       });
       if (!res.ok) throw new Error();
 
-      setTextoRespuesta((prev) => ({ ...prev, [key]: '' }));
+      setTextoRespuesta((prev) => ({ ...prev, [clave]: '' }));
       showToast('Respuesta enviada', 'success');
 
       // Recargar respuestas
@@ -335,7 +334,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
     } catch {
       showToast('No se pudo enviar la respuesta', 'warning');
     } finally {
-      setEnviandoRespuesta((prev) => ({ ...prev, [key]: false }));
+      setEnviandoRespuesta((prev) => ({ ...prev, [clave]: false }));
     }
   };
 
@@ -787,7 +786,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
                             }
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
-                                handleResponder(isReview ? 'resena' : 'publicacion', item.id);
+                                handleResponder(isReview ? 'resena' : 'publicacion', item.id, keyComentarios);
                               }
                             }}
                             maxLength={500}
@@ -806,7 +805,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
                             type="button"
                             className="btn-primary"
                             style={{ borderRadius: 20, padding: '8px 14px' }}
-                            onClick={() => handleResponder(isReview ? 'resena' : 'publicacion', item.id)}
+                            onClick={() => handleResponder(isReview ? 'resena' : 'publicacion', item.id, keyComentarios)}
                             disabled={
                               enviandoRespuesta[keyComentarios] ||
                               !textoRespuesta[keyComentarios]?.trim()
