@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PlusCircle, X, Edit, Trash2, Search, BookOpen } from 'lucide-react';
+import { PlusCircle, X, Edit, Trash2, Search, BookOpen, Undo2 } from 'lucide-react';
 import type { CurrentUser, Libro, Usuario, Prestamo } from '../types';
 import { api } from '../api';
 
@@ -135,6 +135,42 @@ export const LoansView: React.FC<LoansViewProps> = ({ currentUser = null }) => {
     }
   };
 
+  const handleReturn = async (prestamo: Prestamo) => {
+    if (!window.confirm(`¿Devolver "${prestamo.librosPrestados}"?`)) return;
+    try {
+      const hoy = new Date().toISOString().split('T')[0];
+      const loanRes = await api(`/actualizarPrestamo/${prestamo.id_prestamo}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          id_usuario: prestamo.id_usuario,
+          id_libro: prestamo.id_libro,
+          fecha_prestamo: prestamo.fecha_prestamo,
+          fecha_devolucion: hoy,
+          estado: 'Devuelto'
+        }),
+      });
+      if (!loanRes.ok) throw new Error('No se pudo registrar la devolución');
+
+      const bookRes = await api(`/actualizarLibro/${prestamo.id_libro}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          titulo: prestamo.librosPrestados,
+          autor: prestamo.autor,
+          categoria: prestamo.categoria,
+          anio: prestamo.anio,
+          estado: 'Disponible',
+          portada: prestamo.portada,
+          descripcion: prestamo.descripcion
+        }),
+      });
+      if (!bookRes.ok) throw new Error('La devolución se registró pero no se pudo actualizar el libro');
+
+      fetchDatos();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'No se pudo completar la devolución');
+    }
+  };
+
   const prestamosDelUsuario = currentUser?.rol === 'usuario'
     ? prestamos.filter(prestamo => prestamo.id_usuario === currentUser.id_usuario)
     : prestamos;
@@ -230,6 +266,12 @@ export const LoansView: React.FC<LoansViewProps> = ({ currentUser = null }) => {
                 <span className={`badge ${prestamo.estado === 'Devuelto' ? 'success' : prestamo.estado === 'Activo' ? 'warning' : 'danger'}`}>
                   {prestamo.estado === 'Devuelto' ? 'Devuelto' : prestamo.estado === 'Vencido' ? 'Vencido' : 'Prestado'}
                 </span>
+                {prestamo.estado !== 'Devuelto' && (
+                  <button type="button" className="btn-plopp-primary loan-return-btn" onClick={() => handleReturn(prestamo)}>
+                    <Undo2 size={16} />
+                    Devolver
+                  </button>
+                )}
               </div>
             </article>
           ))}

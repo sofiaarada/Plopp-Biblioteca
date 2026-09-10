@@ -276,7 +276,6 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
         const prestamos = await prestamosResponse.json();
         const prestamoActivo = prestamos.find((prestamo: { id_prestamo: number; id_libro?: number; id_usuario?: number; fecha_prestamo?: string; fecha_devolucion?: string; estado?: string }) =>
           Number(prestamo.id_libro) === selectedBook.id_libro &&
-          Number(prestamo.id_usuario) === borrowerId &&
           prestamo.estado !== 'Devuelto'
         );
 
