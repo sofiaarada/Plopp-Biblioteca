@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import { readFileSync } from 'fs';
+import dns from 'node:dns';
 import mysql from 'mysql2';
+
+dns.setDefaultResultOrder('ipv4first');
 
 const dbHost = process.env.DB_HOST || '127.0.0.1';
 
