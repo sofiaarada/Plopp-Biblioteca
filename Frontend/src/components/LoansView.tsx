@@ -19,6 +19,7 @@ export const LoansView: React.FC<LoansViewProps> = ({ currentUser = null }) => {
   const [busqueda, setBusqueda] = useState('');
   const [filtroEstado, setFiltroEstado] = useState<'todos' | 'prestados' | 'devueltos'>('prestados');
   const [busquedaUsuarioModal, setBusquedaUsuarioModal] = useState('');
+  const [busquedaLibroModal, setBusquedaLibroModal] = useState('');
 
   // Estados para el formulario
   const [idUsuario, setIdUsuario] = useState('');
@@ -65,6 +66,7 @@ export const LoansView: React.FC<LoansViewProps> = ({ currentUser = null }) => {
     setFechaPrestamo(new Date().toISOString().split('T')[0]);
     setEstadoPrestamo('Activo');
     setBusquedaUsuarioModal('');
+    setBusquedaLibroModal('');
     setIsModalOpen(true);
   };
 
@@ -77,6 +79,8 @@ export const LoansView: React.FC<LoansViewProps> = ({ currentUser = null }) => {
     setEstadoPrestamo(prestamo.estado);
     const usuarioEdit = usuarios.find(u => u.id_usuario === prestamo.id_usuario);
     setBusquedaUsuarioModal(usuarioEdit ? `${usuarioEdit.nombre} — ${usuarioEdit.cedula || ''}` : '');
+    const libroEdit = libros.find(l => l.id_libro === prestamo.id_libro);
+    setBusquedaLibroModal(libroEdit ? `${libroEdit.titulo} — ${libroEdit.autor}` : '');
     setIsModalOpen(true);
   };
 
@@ -417,17 +421,70 @@ export const LoansView: React.FC<LoansViewProps> = ({ currentUser = null }) => {
               </div>
               <div className="form-group">
                 <label>Libro a Prestar {editingId && '(Opcional al editar)'}</label>
-                <select 
-                  className="form-control" 
-                  value={idLibro}
-                  onChange={(e) => setIdLibro(e.target.value)}
-                  required={!editingId}
-                >
-                  <option value="">Seleccione un libro disponible...</option>
-                  {libros.map(l => (
-                    <option key={l.id_libro} value={l.id_libro}>{l.titulo} ({l.autor})</option>
-                  ))}
-                </select>
+                <div style={{ position: 'relative' }}>
+                  <Search size={16} style={{ position: 'absolute', left: '10px', top: '12px', opacity: 0.5 }} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Buscar libro por título o autor..."
+                    value={busquedaLibroModal}
+                    onChange={(e) => {
+                      setBusquedaLibroModal(e.target.value);
+                      if (idLibro) setIdLibro('');
+                    }}
+                    style={{ paddingLeft: '32px' }}
+                  />
+                </div>
+                {busquedaLibroModal.trim() && !idLibro && (
+                  <div style={{
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: '8px',
+                    marginTop: '6px',
+                    maxHeight: '160px',
+                    overflowY: 'auto',
+                    background: 'rgba(0,0,0,0.3)',
+                  }}>
+                    {libros
+                      .filter(l => {
+                        const texto = busquedaLibroModal.trim().toLowerCase();
+                        return l.titulo.toLowerCase().includes(texto) || (l.autor && l.autor.toLowerCase().includes(texto));
+                      })
+                      .map(l => (
+                        <div
+                          key={l.id_libro}
+                          onClick={() => {
+                            setIdLibro(l.id_libro.toString());
+                            setBusquedaLibroModal(`${l.titulo} — ${l.autor}`);
+                          }}
+                          style={{
+                            padding: '10px 14px',
+                            cursor: 'pointer',
+                            borderBottom: '1px solid rgba(255,255,255,0.06)',
+                            transition: 'background 0.15s',
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+                          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <div style={{ fontWeight: 500 }}>{l.titulo}</div>
+                          <small style={{ opacity: 0.6 }}>{l.autor} · {l.categoria}</small>
+                        </div>
+                      ))}
+                    {libros.filter(l => {
+                      const texto = busquedaLibroModal.trim().toLowerCase();
+                      return l.titulo.toLowerCase().includes(texto) || (l.autor && l.autor.toLowerCase().includes(texto));
+                    }).length === 0 && (
+                      <div style={{ padding: '12px 14px', opacity: 0.5, textAlign: 'center' }}>
+                        No se encontraron libros
+                      </div>
+                    )}
+                  </div>
+                )}
+                {idLibro && (
+                  <small style={{ color: 'var(--success)', marginTop: '4px', display: 'block' }}>
+                    ✓ Libro seleccionado (ID #{idLibro})
+                  </small>
+                )}
+                <input type="hidden" value={idLibro} required={!editingId} />
               </div>
               <div className="form-group">
                 <label>Fecha de Préstamo</label>

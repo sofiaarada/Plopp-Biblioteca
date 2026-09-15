@@ -104,6 +104,10 @@ export interface CurrentUser {
   rol: 'admin' | 'bibliotecario' | 'usuario';
   token?: string;
   foto?: string | null;
+  proveedor?: string | null;
+  cedula?: string | null;
+  telefono?: string | null;
+  perfilIncompleto?: boolean;
 }
 
 // ── Tipos de la Red Social ──────────────────────────────────────────────────

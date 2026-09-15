@@ -66,6 +66,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
       const user: CurrentUser = {
         ...(res.data.usuario as CurrentUser),
         token: res.data.token ?? null,
+        perfilIncompleto: !!res.data.perfilIncompleto,
       };
 
       onLogin(user);

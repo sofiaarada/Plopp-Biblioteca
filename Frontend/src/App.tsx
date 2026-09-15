@@ -16,6 +16,7 @@ import { RegisterView } from './components/RegisterView';
 import { TutorialModal } from './components/TutorialModal';
 import { NotificacionesModal } from './components/NotificacionesModal';
 import { AIAssistant } from './components/AIAssistant';
+import { CompletarPerfilModal } from './components/CompletarPerfilModal';
 import { Moon, Sun, Menu, Bell } from 'lucide-react';
 import type { CurrentUser, SocialUser } from './types';
 import { getStoredUser, setStoredUser, setToken, api } from './api';
@@ -144,6 +145,12 @@ function App() {
     setToken(null); setStoredUser(null); setCurrentUser(null);
     setCurrentView('dashboard'); setAuthView('welcome');
     setSidebarOpen(false); setChatTarget(null); setProfileTarget(null);
+  };
+
+  const handlePerfilCompletado = (user: CurrentUser) => {
+    setToken(user.token ?? null);
+    setStoredUser(user);
+    setCurrentUser(user);
   };
 
   const renderView = () => {
@@ -319,6 +326,10 @@ function App() {
       />
 
       <AIAssistant role={currentUser.rol} />
+
+      {currentUser.perfilIncompleto && (
+        <CompletarPerfilModal currentUser={currentUser} onCompleted={handlePerfilCompletado} />
+      )}
     </div>
   );
 }

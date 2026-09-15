@@ -73,7 +73,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({ onAuthenti
         return;
       }
       setToken(data.token ?? null);
-      onAuthenticated({ ...(data.usuario as CurrentUser), token: data.token ?? null });
+      onAuthenticated({ ...(data.usuario as CurrentUser), token: data.token ?? null, perfilIncompleto: !!data.perfilIncompleto });
       showToast(`¡Bienvenido, ${nombre.split(' ')[0]}!`, 'success');
     } catch {
       showToast('No se pudo conectar con el servidor', 'warning');

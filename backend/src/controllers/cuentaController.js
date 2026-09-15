@@ -130,8 +130,12 @@ export const loginSocial = async (req, res) => {
                 [nombre, cedulaTemporal, correo, '', passwordAleatorio]
             );
 
-            lector = { id_usuario: creado.insertId, nombre, correo };
+            lector = { id_usuario: creado.insertId, nombre, correo, cedula: cedulaTemporal, telefono: '' };
         }
+
+        const perfilIncompleto = !lector.cedula || !lector.telefono ||
+            String(lector.cedula).startsWith(`${proveedor || 'social'}-`) ||
+            !String(lector.telefono || '').trim();
 
         const token = signToken({
             id_cuenta: null,
@@ -139,17 +143,24 @@ export const loginSocial = async (req, res) => {
             nombre_usuario: lector.nombre,
             correo: lector.correo,
             rol: 'usuario',
+            proveedor: proveedor || 'social',
+            cedula: lector.cedula,
+            telefono: lector.telefono,
         });
 
         res.json({
             mensaje: 'Login social exitoso',
             token,
+            perfilIncompleto,
             usuario: {
                 id_cuenta: null,
                 id_usuario: lector.id_usuario,
                 nombre_usuario: lector.nombre,
                 correo: lector.correo,
                 rol: 'usuario',
+                proveedor: proveedor || 'social',
+                cedula: lector.cedula,
+                telefono: lector.telefono,
             },
         });
     } catch (error) {

@@ -84,28 +84,87 @@ app.post('/api/auth/google', async (req, res) => {
         'INSERT INTO usuarios (nombre, cedula, correo, telefono, password) VALUES (?, ?, ?, ?, ?)',
         [name, cedulaTemporal, email, '', '']
       );
-      lector = { id_usuario: result.insertId, nombre: name, correo: email };
+      lector = { id_usuario: result.insertId, nombre: name, correo: email, cedula: cedulaTemporal, telefono: '' };
     }
 
+    const perfilIncompleto = !lector.cedula || !lector.telefono ||
+      String(lector.cedula).startsWith('google-') ||
+      !String(lector.telefono).trim();
+
     const sessionToken = jwt.sign(
-      { id_usuario: lector.id_usuario, nombre_usuario: lector.nombre, correo: lector.correo, rol: 'usuario' },
+      {
+        id_usuario: lector.id_usuario,
+        nombre_usuario: lector.nombre,
+        correo: lector.correo,
+        rol: 'usuario',
+        proveedor: 'google',
+        cedula: lector.cedula,
+        telefono: lector.telefono,
+      },
       process.env.JWT_SECRET || 'biblioteca_ferry_secret_2026',
       { expiresIn: '8h' }
     );
 
     res.json({
       token: sessionToken,
+      perfilIncompleto,
       usuario: {
         id_cuenta:      null,
         id_usuario:     lector.id_usuario,
         nombre_usuario: lector.nombre,
         correo:         lector.correo,
         rol:            'usuario',
+        proveedor:      'google',
+        cedula:         lector.cedula,
+        telefono:       lector.telefono,
       },
     });
   } catch (error) {
     console.error('Error al verificar el token de Google:', error);
     res.status(401).json({ error: 'Token de Google no válido o expirado' });
+  }
+});
+
+// Completar perfil (cédula y teléfono) tras login social
+app.put('/api/auth/completarPerfil', async (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+  if (!token) return res.status(401).json({ mensaje: 'No autorizado' });
+
+  const { cedula, telefono } = req.body;
+  if (!cedula || !String(cedula).trim() || !telefono || !String(telefono).trim()) {
+    return res.status(400).json({ mensaje: 'La cédula y el teléfono son obligatorios' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'biblioteca_ferry_secret_2026');
+    const idUsuario = decoded.id_usuario;
+    if (!idUsuario) return res.status(401).json({ mensaje: 'Sesión inválida' });
+
+    await db.query('UPDATE usuarios SET cedula = ?, telefono = ? WHERE id_usuario = ?', [
+      String(cedula).trim(),
+      String(telefono).trim(),
+      idUsuario,
+    ]);
+
+    const nuevoToken = jwt.sign(
+      {
+        id_usuario: decoded.id_usuario,
+        nombre_usuario: decoded.nombre_usuario,
+        correo: decoded.correo,
+        rol: 'usuario',
+        proveedor: 'google',
+        cedula: String(cedula).trim(),
+        telefono: String(telefono).trim(),
+      },
+      process.env.JWT_SECRET || 'biblioteca_ferry_secret_2026',
+      { expiresIn: '8h' }
+    );
+
+    res.json({ mensaje: 'Perfil completado', token: nuevoToken });
+  } catch (error) {
+    console.error('Error al completar perfil:', error);
+    res.status(500).json({ mensaje: 'Error al completar el perfil' });
   }
 });
 // ── Fin Google OAuth ────────────────────────────────────────────────────────

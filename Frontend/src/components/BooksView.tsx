@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, BookText, X, Edit, Trash2, Star, Send } from 'lucide-react';
+import { Plus, BookText, X, Edit, Trash2, Star, Send, Search } from 'lucide-react';
 import type { Libro, CurrentUser, Resena } from '../types';
 import { api, resolveImageUrl } from '../api';
 import { useToast } from './Toast';
@@ -27,6 +27,7 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
 
   // Estado para guardar los libros desde la BD
   const [libros, setLibros] = useState<Libro[]>([]);
+  const [busqueda, setBusqueda] = useState('');
 
   // Estados para el formulario
   const [titulo, setTitulo] = useState('');
@@ -325,20 +326,41 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
     }
   };
 
+  const librosFiltrados = busqueda.trim()
+    ? libros.filter((l) =>
+        l.titulo.toLowerCase().includes(busqueda.trim().toLowerCase()) ||
+        (l.autor && l.autor.toLowerCase().includes(busqueda.trim().toLowerCase())) ||
+        (l.categoria && l.categoria.toLowerCase().includes(busqueda.trim().toLowerCase()))
+      )
+    : libros;
+
   return (
     <div className="view-container">
       <div className="page-header">
         <h2>Catálogo de Libros</h2>
-        {!isReadOnly && (
-          <button className="btn-primary" onClick={openModalForCreate}>
-            <Plus size={20} />
-            <span>Agregar Libro</span>
-          </button>
-        )}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative' }}>
+            <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }} />
+            <input
+              type="text"
+              placeholder="Buscar por título, autor o categoría..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="form-control"
+              style={{ paddingLeft: '32px', width: '260px', height: '38px' }}
+            />
+          </div>
+          {!isReadOnly && (
+            <button className="btn-primary" onClick={openModalForCreate}>
+              <Plus size={20} />
+              <span>Agregar Libro</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="books-grid">
-        {libros.map((libro) => (
+        {librosFiltrados.map((libro) => (
           <div
             key={libro.id_libro}
             className="book-card book-card-clickable"
@@ -513,19 +535,28 @@ export const BooksView: React.FC<BooksViewProps> = ({ userRole = 'usuario', curr
               </div>
               <div className="form-group">
                 <label>Categoría</label>
-                <select 
-                  className="form-control" 
+                <input
+                  type="text"
+                  className="form-control"
                   value={categoria}
                   onChange={(e) => setCategoria(e.target.value)}
+                  placeholder="Escribe la categoría (ej. Novela, Ciencia ficción, Misterio...)"
+                  list="categorias-libros"
                   required
-                >
-                  <option value="">Seleccione una categoría</option>
-                  <option value="Novela">Novela</option>
-                  <option value="Ficción">Ficción</option>
-                  <option value="Historia">Historia</option>
-                  <option value="Infantil">Infantil</option>
-                  <option value="Tecnología">Tecnología</option>
-                </select>
+                />
+                <datalist id="categorias-libros">
+                  <option value="Novela" />
+                  <option value="Ficción" />
+                  <option value="Historia" />
+                  <option value="Infantil" />
+                  <option value="Tecnología" />
+                  <option value="Ciencia ficción" />
+                  <option value="Misterio" />
+                  <option value="Terror" />
+                  <option value="Romance" />
+                  <option value="Biografía" />
+                  <option value="Ensayo" />
+                </datalist>
               </div>
               <div className="form-group">
                 <label>Año de Publicación</label>
